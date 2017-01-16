@@ -1,2 +1,1 @@
-unix_config
-unix_config
+my_unix
