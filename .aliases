@@ -1,44 +1,11 @@
-# EC Standard Login Environment -*- sh -*-
-# user .aliases file
-# $Source: /usr/cvs/cvsrep/ec_environ-1.0/release/user/aliases,v $
-# $Revision: 1.1 $
 
-# You may place your personal aliases here or in .cshrc.$USER
-#
-# examples:
-# alias . exit
-# alias e emacs
-# alias telnet ssh2
-
-#############################
-## TCSH Versions
-#############################
-#abhishek: begin
 #alias myname 'set prompt = "\n%{\033[32m%}%m:%~>\n>>"'
 alias myname 'set prompt = "\n%{%}%m:%~>\n>>"'
-alias fm1 'cd /nfs/fm/stod/stod2104/w.jainabhi.100/dfi/'
-alias fm2 'verif/icf_gen5p1_32bwecc/icf_tb/scripts/setup'
-#alias fm2 'source /p/hdk/rtl/hdk.rc -cfg hiphdk'
+
 alias fm6 'myname'
-
-
 alias cl 'clear'
-#alias xtitle echo 'echo "\033]0;title\007"'
 alias xtitle '~/bin/titleFunction.sh \!*'
 alias g gvim
-
-alias dfipull 'git pull /nfs/fm/stod/stod2093/w.mohameda.100/icf_share/ip-ddrphy-dfi-a0.git'
-alias dfipush 'git push /nfs/fm/stod/stod2093/w.mohameda.100/icf_share/ip-ddrphy-dfi-a0.git'
-alias phypull 'git pull /nfs/fm/stod/stod2093/w.mohameda.100/icf_share/ip-ddrphy-gen5p1-a0.git'
-alias phypush 'git push /nfs/fm/stod/stod2093/w.mohameda.100/icf_share/ip-ddrphy-gen5p1-a0.git'
-alias home 'cd /nfs/fm/stod/stod2104/w.jainabhi.100/'
-alias dfi 'cd /nfs/fm/stod/stod2104/w.jainabhi.100/dfi'
-alias phy 'cd /nfs/fm/stod/stod2104/w.jainabhi.100/ip-ddrphy-gen5p1-a0'
-#alias sub './sublime/sublime_text &' 'set prompt = "\n%{\033[32m%}%m:%~\n"'
-#abhishek: end
-
-# Editor (I don't know if this matters)
-setenv EDITOR "gnome-terminal --working-directory=$PWD --geometry=130x70 -x gvim -nw"
 
 # Simple commands
 alias ll    'ls -h -l -F --color'
@@ -49,12 +16,3 @@ alias clean 'rm *~ .*~ *# .#* >& /dev/null'
 # GREP
 alias grep	'grep --color=auto'
 alias grepError 'grep -i ERROR -A 4'
-
-# PS
-alias psash 'ps -U jainabhi'
-#folsom aliases
-# Envt for LPDDR4
-alias lp1 'cd /nfs/pdx/disks/f736.lpddr4.001/jainabhi/ip756'
-alias lp4 'cd digital'
-alias lp5 'source scripts/setup'
-alias lp6 myname
