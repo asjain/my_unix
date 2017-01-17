@@ -1,0 +1,14 @@
+#!/bin/echo "this is not a shell script"
+#
+# EC Standard Login Environment
+# user customized project name
+# $Source: /usr/cvs/cvsrep/ec_environ-1.0/release/user/project.user,v $
+# $Revision: 1.1 $
+#
+# This file is normally installed in $HOME/.project.$USER.
+# It should contain all comments followed by a line with
+# one word naming the project.  This name will be used to
+# set $EC_ENV_PROJ and construct a path to project configuration
+# files, normally $EC_ENV_ROOT/projects/$EC_ENV_PROJ.
+#
+default

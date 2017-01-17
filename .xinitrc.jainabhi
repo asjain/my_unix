@@ -1,0 +1,316 @@
+# EC Standard Login Environment -*- sh -*-
+# user .xinitrc.$USER file
+# $Source: /usr/cvs/cvsrep/ec_environ-1.0/release/user/xinitrc.user,v $
+# $Revision: 1373 $
+
+set ec_env_error_log = /tmp/eclogin-errors.$USER
+echo "I: (.xinitrc.$USER) [entering] `/bin/date`" >> $ec_env_error_log
+
+###
+### for debugging
+###
+echo "environment for this session:"
+if ($?DISPLAY) then
+   echo "DISPLAY=$DISPLAY"
+endif
+#
+if ($?XAUTHORITY) then
+   echo "XAUTHORITY=$XAUTHORITY"
+endif
+#
+if ($?cwd) then
+  echo "cwd=$cwd"
+endif
+#
+echo "pwd=`pwd`"
+echo "path=$PATH"
+echo "pid=$$"
+
+# setting the shell verbose flag will help debug;
+# errors will normaly land in one of these files:
+#
+#  display manager (xdm/gdm): $HOME/.xsession-errors
+#  vnc xstartup:              $HOME/.vnc/<host:display>.log
+#  console using runx:        (tbd)
+#
+set verbose
+
+
+###
+###---------->USER APPLICATIONS<----------
+###
+
+### Run persistent applications in the background;
+### see below for window manager to run last.
+
+### install application resources - fonts, colors, etc.
+if ( -r $HOME/.Xdefaults ) then
+  xrdb -DUNAME=`uname` -merge $HOME/.Xdefaults
+endif
+
+### install keyboard mapping
+if ( -r $HOME/.Xmodmap ) then
+  xmodmap $HOME/.Xmodmap
+endif
+
+### a plain background on the root window
+xsetroot -solid gray
+
+### turn on bell/beep sound
+xset b 1 150 60
+
+### turn off key click sound
+xset -c
+
+### determine if this user owns the console for xterm -C
+set EC_XCONSOLE = ""
+set EC_CONS_USR = `/bin/ls -ldL /dev/console | awk '{print $3}'`
+switch ($EC_UNAME)
+
+    case SunOS_5* :
+      if ("$EC_CONS_USR" == "$USER") then
+
+      #choose ONE of the following, do not uncomment both:
+        #option A: console msgs appear in primary xterm
+        #set EC_XCONSOLE = "-C"
+
+        #option B: use xconsole, msgs appear in dedicated window
+        xconsole &
+
+      endif
+      breaksw
+
+    default :
+      # do nothing
+      breaksw
+
+endsw
+
+
+### at least one xterm should be a login session with -ls,
+### and fixed font should be available on any server
+### this xterm also receives console msgs on solaris
+xterm $EC_XCONSOLE -fn fixed -ls -n "login shell" -geometry +10+10 &
+
+unset EC_XCONSOLE
+unset EC_CONS_USR
+
+### additional xterms
+xterm -geometry +20+20 &
+# xterm -n maroon -geometry +20-10 -fg white -bg maroon &
+# xterm -n blue -geometry +30-20 -fg white -bg blue  &
+
+###
+###---------->WINDOW MANAGER<----------
+###
+
+### Note the window manager does NOT run as a background process.
+### This is to allow the session to terminate when the window manager
+### ends, usually by a menu item that says "logout" invoking exit its function.
+###
+### This loop catches the window manager exit just in case it crashes
+### for some reason, offering the chance to restart instead of losing
+### the entire session due to window manager bug.
+
+set oktoexit = 0
+set nsafety = 0
+while ( $oktoexit == 0 )
+
+  ###---------->window manager<----------
+  # You may change these if you prefer something else,
+  # and may have different setup on each platform.
+  #
+  # NOTE THAT EC CURRENTLY SUPPORTS FVWM2 ONLY
+  # because it is available and known to work
+  # consistently on all platforms.
+  #
+  # Use of gnome/kde/whatever is at your discretion
+  # and EC will not provide your base configuration
+  # nor answer configuration questions.
+  #
+  # KDE specifically has some performance impact that
+  # makes it a poor choice for shared workstations.
+  # All those fancy features performing graphics
+  # animation are cycles that could have been used
+  # running more valuable processes for design work.
+  #
+
+  switch ($EC_UNAME)
+
+    case HP-UX* :
+      /usr/intel/bin/fvwm2
+      #twm
+      #mwm
+      breaksw
+
+    case Linux* :
+      /usr/intel/bin/fvwm2
+      #twm
+      #mwm
+
+      ### note: Gnome and KDE should be run as a full
+      ### session, normally selected from the display
+      ### manager session menu or in the .vnc/xstartup
+      ### file.
+      ###
+      ### This is only for the window manager running
+      ### within the traditional X session.
+      ###
+      ### gnome-wm ### will work but not recommended
+      ### kwin     ### will NOT work here
+
+      breaksw
+
+    # this is the newest version available, sorry to
+    # call it directly and bypass possible $USER_ITOOLS
+    case SunOS_5.7*:
+      /usr/intel/97r1.6/bin/fvwm2
+      #twm
+      #mwm
+      #olvwm
+      breaksw
+
+    case Sun* :
+      /usr/intel/bin/fvwm2
+      #twm
+      #mwm
+      #olvwm
+      breaksw
+
+    case IBM* :
+      /usr/intel/bin/fvwm2
+      #twm
+      #mwm
+      breaksw
+
+    default :
+      # seach for only one of these to run;
+      set wmdone=0
+      foreach wm ( /usr/intel/bin/fvwm2 )
+	  if ( $wmdone == 0 && -x $wm ) then
+	    set wmdone = 1
+	    $wm
+	  endif
+      end
+      foreach wm ( mwm twm olvwm )
+	foreach p ( $path )
+	  if ( $wmdone == 0 && -x $p/$wm ) then
+	    set wmdone = 1
+	    $wm
+	  endif
+	end
+      end
+      breaksw
+
+  endsw
+
+  ###---------->safety net<----------
+
+  # see if display connection is totally gone
+  xlsclients |& /usr/intel/bin/gegrep -i "(cannot|unable.to|can.t).open.display"
+  if ($status == 0) then
+    echo "I: (.xinitrc.$USER) wm exited, xlsclients failed" >> $ec_env_error_log
+    set oktoexit = 1
+  endif
+
+  # see if any useful clients remain
+  if ($oktoexit == 0) then
+    set nclients = `xlsclients | grep -v xautolock |grep -v xlock| wc -l | sed 's/ //g'`
+    if ("$nclients" == "0") then
+      echo "I: (.xinitrc.$USER) wm exited, no more clients" >> $ec_env_error_log
+      set oktoexit = 1
+    endif
+  endif
+
+  # give user a chance to restart
+  if ($oktoexit == 0) then
+    xmessage -geometry -10-10 -buttons \
+	"Continue / Restart Window Manager:0,New xterm:3,Logout / Terminate All X Apps:2" \
+	-file - << EOF
+X Window Session Control - EC Login Environment
+
+Your window manager has terminated for one of the following reasons:
+* you chose to exit before closing other applications
+* it failed to start due to system or configuration error
+* it crashed due to runtime error
+
+This popup message prevents the X session from terminating
+prematurely.  You may attempt to restart the window manager
+or exit the session.
+
+If the window manager does not restart, you may want to try
+starting it from a command line.  If you no longer have any
+xterm windows open, the button below should start one.
+Window managers you may want to try include:
+fvwm2, fvwm-themes-start, twm, mwm, olwm
+EOF
+
+    switch ($status)
+
+      # user wanted to continue
+      case 0: 
+        echo "I: (.xinitrc.$USER) user choice restart wm" >> $ec_env_error_log
+        # reset the loop counter so user theoretically can do
+        # infinite number of legitimate window manager restarts
+        set nsafety = 0
+	breaksw
+
+      # status should be 1 if xmessage cannot open the display
+      # let this loop a few times in case display recovers quickly
+      case 1:
+        set nsafety = `expr $nsafety + 1`
+        if ( $nsafety > 5 ) then
+          set oktoexit = 1
+          echo "I: (.xinitrc.$USER) wm safety limit reached" >> $ec_env_error_log
+        endif
+	breaksw
+
+      # user said ok to end
+      case 2:
+        echo "I: (.xinitrc.$USER) user choice session end" >> $ec_env_error_log
+        set oktoexit = 1
+	breaksw
+
+      # get new xterm
+      case 3:
+        echo "I: (.xinitrc.$USER) user choice new xterm " >> $ec_env_error_log
+	xterm -geometry +20+20 &
+        set nsafety = 0
+	breaksw
+
+    endsw
+
+  endif
+
+  # other possible logic to end this loop:
+  #
+  # A) count only 'fast' iterations of this loop
+  #  1) use gdate to get a timestap
+  #  2) if new timestamp-oldtimestamp < 10 then counter++ else counter=0
+  #  3) if counter > 10 then oktoexit=1 else oldtimestamp=timestamp
+  #
+  # B) ??
+
+end
+
+# try to terminate any stray clients including xautolock
+# so the X server will recycle correctly if using -once
+set xlist = `xlsclients -al |grep "Window" | sed "s/Window //" | sed "s/://"`
+foreach x ( $xlist )
+  xkill -id $x
+end
+
+# terminate vncserver if this was a vnc session
+if ($?VNCSESSION) then
+  #/usr/intel/bin/vncstop $DISPLAY
+
+  #DISPLAY may contain fqdn or singleton; vncstop needs singleton
+  set hname=`echo $DISPLAY | awk -F: '{print $1}' | awk -F. '{print $1}'`
+  set dspno=`echo $DISPLAY | awk -F: '{print $2}' | awk -F. '{print $1}'`
+  /usr/intel/bin/vncstop ${hname}:${dspno}
+
+endif
+
+echo "I: (.xinitrc.$USER) [leaving]" >> $ec_env_error_log
+exit $status
+### THE END

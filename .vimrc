@@ -3,7 +3,7 @@ set number
 colorscheme desert
 syntax on
 "set gfn=Monospace\ 13
-set guifont=DEC\ Terminal\ 14
+set guifont=DEC\ Terminal\ 13
 filetype indent plugin on
 set autowrite
 set sw=4
@@ -12,5 +12,5 @@ set ignorecase
 set smartcase
 set tabstop=4
 set shiftwidth=4
-set smarttab
+set expandtab
 set cursorline
