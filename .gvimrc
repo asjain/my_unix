@@ -1,3 +1,5 @@
+filetype plugin indent on
+syntax on
 set backspace=2
 set number
 colorscheme desert
@@ -14,3 +16,5 @@ set tabstop=4
 set shiftwidth=4
 set smarttab
 set cursorline
+au BufNewFile,BufRead *.svh set filetype=verilog_systemverilog
+au BufNewFile,BufRead *.dv set filetype=make
