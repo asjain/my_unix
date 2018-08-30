@@ -1,18 +1,11 @@
 
-#alias myname 'set prompt = "\n%{\033[32m%}%m:%~>\n>>"'
 alias myname 'set prompt = "\n%{%}%m:%~>\n>>"'
-
-alias fm6 'myname'
-alias cl 'clear'
-alias xtitle '~/bin/titleFunction.sh \!*'
-alias g gvim
-
-# Simple commands
-alias ll    'ls -h -l -F --color'
-alias lt    'ls -h -ltr -F --color'
-alias ls    'ls -h -F --color'
-alias la    'ls -h -la -F --color'
-alias clean 'rm *~ .*~ *# .#* >& /dev/null'
-# GREP
-alias grep	'grep --color=auto'
-alias grepError 'grep -i ERROR -A 4'
+alias c         'clear'
+alias xtitle    '~/bin/titleFunction.sh \!*'
+alias g         gvim
+alias h         'history'
+alias j         'jobs -l'
+alias hg        'history|grep '
+alias psg       'ps -ef | grep'
+alias ..        'cd ..'
+alias cd..      'cd ..' 
