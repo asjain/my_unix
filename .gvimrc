@@ -18,3 +18,4 @@ set smarttab
 set cursorline
 au BufNewFile,BufRead *.svh set filetype=verilog_systemverilog
 au BufNewFile,BufRead *.dv set filetype=make
+#test
