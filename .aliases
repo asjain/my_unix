@@ -1,11 +1,13 @@
-
+alias home 'cd /my/disk/path/'
 alias myname 'set prompt = "\n%{%}%m:%~>\n>>"'
-alias c         'clear'
-alias xtitle    '~/bin/titleFunction.sh \!*'
-alias g         gvim
-alias h         'history'
-alias j         'jobs -l'
-alias hg        'history|grep '
-alias psg       'ps -ef | grep'
-alias ..        'cd ..'
-alias cd..      'cd ..' 
+alias c 'clear'
+alias g gvim
+alias h 'history'
+alias j 'jobs -l'
+alias hg 'history|grep '
+alias psg 'ps -ef | grep'
+alias .. 'cd ..'
+alias cd.. 'cd ..'
+#GIT shortcuts
+alias gitex 'g .git/info/exclude'
+alias gitdiff 'git difftool -t tkdiff --no-prompt'
